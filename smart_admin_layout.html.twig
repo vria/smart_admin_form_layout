@@ -1,0 +1,132 @@
+{% use "form_div_layout.html.twig"  with form_widget_simple as base_form_widget_simple %}
+
+
+{# FORM_START #}
+{%- block form_start -%}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' smart-form')|trim}) %}
+    {{- parent() -}}
+{%- endblock form_start -%}
+
+
+{# FORM_ROW #}
+{%- block form_row -%}
+    <section>
+        {{- form_label(form) -}}
+        {{- form_widget(form) -}}
+        {{- form_errors(form) -}}
+    </section>
+{%- endblock form_row -%}
+
+
+{# LABEL #}
+{%- block form_label -%}
+    {% set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' label')|trim}) %}
+    {{- parent() -}}
+{%- endblock form_label -%}
+
+
+{# INPUT #}
+{%- block form_widget_simple -%}
+    <label class="input{% if not valid %} state-error{% endif %}">
+        {{- block('base_form_widget_simple') -}}
+    </label>
+{%- endblock form_widget_simple -%}
+
+
+{# TEXTAREA #}
+{%- block textarea_widget -%}
+    <label class="textarea{% if not valid %} state-error{% endif %}">
+        {%- set attr = attr|merge({class: (attr.class|default('') ~ ' custom-scroll')|trim, rows: (attr.rows|default(3))}) -%}
+        <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
+    </label>
+{%- endblock textarea_widget -%}
+
+
+{# MONEY #}
+{%- block money_widget -%}
+    <label class="input{% if not valid %} state-error{% endif %}">
+        {%- set symbol = money_pattern|replace({ '{{ widget }}': '' }) -%}
+        {% if money_pattern ends with '{{ widget }}' %}<i class="icon-prepend">{{ symbol }}</i>{% endif -%}
+        {{ block('base_form_widget_simple') -}}
+        {% if money_pattern starts with '{{ widget }}' %}<i class="icon-append">{{ symbol }}</i>{% endif -%}
+    </label>
+{%- endblock money_widget -%}
+
+
+{# PERCENT #}
+{%- block percent_widget -%}
+    <label class="input{% if not valid %} state-error{% endif %}">
+        {{- block('base_form_widget_simple') -}}
+        <i class="icon-append">%</i>
+    </label>
+{%- endblock percent_widget -%}
+
+
+{# RANGE #}
+{%- block range_widget -%}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' slider slider-primary')|trim,
+        'data-slider-min': attr.min|default,
+        'data-slider-max': attr.max|default,
+        'data-slider-value': value}) -%}
+    {{ block('base_form_widget_simple') }}
+{%- endblock range_widget %}
+
+
+{# SINGLE RADIO OR CHECKBOX ROW #}
+{%- block single_choice_row_expanded -%}
+    <section>
+        {{- form_errors(form) -}}
+        <label class="{{ multiple ? 'checkbox' : 'radio'}}{% if not valid %} state-error{% endif %}">
+            {{- block(multiple ? 'checkbox_widget' : 'radio_widget') -}}
+            <i></i>
+            {{- translation_domain is same as(false) ? label : label|trans({}, translation_domain) -}}
+        </label>
+    </section>
+{%- endblock single_choice_row_expanded -%}
+
+
+{# CHECKBOX #}
+{%- block checkbox_row -%}
+    {% set multiple = true -%}
+    {{ block('single_choice_row_expanded') }}
+{%- endblock checkbox_row -%}
+
+
+{# RADIO #}
+{%- block radio_row -%}
+    {% set multiple = false -%}
+    {{ block('single_choice_row_expanded') }}
+{%- endblock radio_row -%}
+
+
+{# RADIOS AND CHECKBOXES WIDGET #}
+{%- block choice_widget_expanded -%}
+    <div {{ block('widget_container_attributes') }}>
+        {%- for child in form -%}
+            {{ form_row(child) }} {# radio_row or checkbox_row #}
+        {%- endfor -%}
+    </div>
+{%- endblock choice_widget_expanded -%}
+
+
+{# SELECT #}
+{%- block choice_widget_collapsed -%}
+    {% set attr = multiple ? attr|merge({class: (attr.class|default ~ ' custom-scroll')|trim}) : attr -%}
+    <label class="select{% if multiple %} select-multiple{% endif %}{% if not valid %} state-error{% endif %}">
+        {{- parent() -}}
+        {% if not multiple %}<i></i>{% endif -%}
+    </label>
+{%- endblock choice_widget_collapsed -%}
+
+
+{# FILE #}
+{% block file_widget -%}
+    <div class="input input-file{% if not valid %} state-error{% endif %}">
+        <span class="button">
+            {{- block('base_form_widget_simple') -}}
+            {{ 'browse'|trans -}}
+        </span>
+        <input type="text" placeholder="{{ 'include_some_files'|trans }}" readonly="">
+    </div>
+{%- endblock file_widget %}
+
