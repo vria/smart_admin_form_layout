@@ -1,8 +1,18 @@
 {% use "form_div_layout.html.twig"  with form_widget_simple as base_form_widget_simple %}
 
+{% use "form_div_layout.html.twig"  with form_widget_simple as base_form_widget_simple %}
+
 
 {# START #}
 {%- block form_start -%}
+    <style>
+        .smart-form .tooltip{
+            background: transparent;
+        }
+        .tooltip.in {
+            opacity: .9;
+        }
+    </style>
     {% set attr = attr|merge({class: (attr.class|default('') ~ ' smart-form')|trim}) %}
     {{- parent() -}}
 {%- endblock form_start -%}
@@ -75,9 +85,9 @@
 {# RANGE #}
 {%- block range_widget -%}
     {% set attr = attr|merge({class: (attr.class|default('') ~ ' slider slider-primary')|trim,
-        'data-slider-min': attr.min|default,
-        'data-slider-max': attr.max|default,
-        'data-slider-value': value}) -%}
+    'data-slider-min': attr.min|default,
+    'data-slider-max': attr.max|default,
+    'data-slider-value': value}) -%}
     {{ block('base_form_widget_simple') }}
 {%- endblock range_widget %}
 
@@ -136,7 +146,6 @@
             {{- block('base_form_widget_simple') -}}
             {{ 'browse'|trans -}}
         </span>
-        <input type="text" placeholder="{{ 'include_some_files'|trans }}" readonly="">
+        <input type="text" placeholder="{{ 'no_file_chosen'|trans }}" readonly="">
     </div>
 {%- endblock file_widget %}
-
